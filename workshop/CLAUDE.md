@@ -16,6 +16,7 @@ The team is Billy (Computing, the owner of this repo), Yelina (Supply Chain Mana
   - `COMP2S01_Assessment_Rubrics.pdf` and `COMP2S01_Assessment_Components.pdf`: grading. Proposal 10%, teaching materials 15%, individual service performance 40%, reflective journal 30%, class performance 5%.
 - `proposal/workshop-proposal.docx` is the proposal itself and the source of truth for the timetable, who leads what, and deadlines (Part 3).
 - `proposal/Taming_AI_Proposal_Presentation.pptx` and `proposal/Taming_AI_Day1_Lesson.pptx` are the proposal deck and the Day 1 lesson slides. They were made before the review fixes, so they still describe the old plan (for example, a paper game on Day 4). Bring them in line with the docx before they are used.
+- `Taming-AI-team-brief.pdf` is a two-page summary of the proposal for teammates: the products, the week, the rules, the Day 4 web game, who leads what, and deadlines. It was printed from HTML with headless Chrome, and the HTML source isn't kept, so rebuild it from the docx when the plan changes.
 - `proposal-review.md` reviews the proposal against the brief, template and rubric, through each member's discipline, and includes an activity bank. Its sources are dated 15 Oct 2026, and its free-tier numbers are unofficial.
 
 ## Rules the proposal must keep
