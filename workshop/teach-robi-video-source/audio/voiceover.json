@@ -1,0 +1,21 @@
+{
+  "voice": "en-PH-RosaNeural",
+  "rate": "-10%",
+  "lines": [
+    { "id": "title", "frame": 14, "text": "How does a computer learn?" },
+    { "id": "robi", "frame": 150, "text": "This is Robi, a brand-new AI." },
+    { "id": "cant", "frame": 272, "text": "Is it thumbs up, or thumbs down? Robi can't tell!" },
+    { "id": "know", "frame": 455, "text": "How do you know?" },
+    { "id": "lots", "frame": 552, "text": "You have seen lots of examples!" },
+    { "id": "show", "frame": 690, "text": "Step one: show Robi lots of examples." },
+    { "id": "data", "frame": 880, "text": "Examples are data." },
+    { "id": "train", "frame": 1086, "text": "Step two: train. Robi studies every photo." },
+    { "id": "pattern", "frame": 1258, "text": "Robi finds the pattern!" },
+    { "id": "test", "frame": 1395, "text": "Step three: test with a new hand." },
+    { "id": "right", "frame": 1556, "text": "Robi got it right!" },
+    { "id": "same", "frame": 1726, "text": "But what if all the examples look the same?" },
+    { "id": "still", "frame": 1902, "text": "Will Robi still get it right?" },
+    { "id": "find", "frame": 2076, "text": "Let's find out!" },
+    { "id": "teachers", "frame": 2145, "text": "You are Robi's teachers today!" }
+  ]
+}

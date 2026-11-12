@@ -1,0 +1,77 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>html,body{margin:0;background:transparent}</style></head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+const S=+(new URLSearchParams(location.search).get('s')||1200);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setSize(S,S); renderer.setPixelRatio(1);
+renderer.toneMapping=THREE.NeutralToneMapping; renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture; scene.environmentIntensity=0.55;
+const cam=new THREE.PerspectiveCamera(18,1,0.1,100);
+const key=new THREE.DirectionalLight(0xfff3e6,2.3); key.castShadow=true; key.shadow.mapSize.set(2048,2048); key.shadow.radius=6; key.shadow.bias=-0.0004;
+Object.assign(key.shadow.camera,{left:-3,right:3,top:3,bottom:-3,near:0.1,far:20});
+scene.add(key); scene.add(key.target);
+const rim=new THREE.DirectionalLight(0xdfe8ff,1.5); scene.add(rim); scene.add(rim.target);
+const fill=new THREE.HemisphereLight(0xffffff,0xb0a090,0.55); scene.add(fill);
+
+const C={shell:'#FFC83A',white:'#FBF8F2',screen:'#141c33',dark:'#2a3147',accent:'#FF8A3D'};
+const P=(o)=>new THREE.MeshPhysicalMaterial(Object.assign({roughness:0.34,clearcoat:0.7,clearcoatRoughness:0.22},o));
+const shell=P({color:C.shell}); const white=P({color:C.white,roughness:0.4}); const screenM=P({color:C.screen,roughness:0.12,clearcoat:1,clearcoatRoughness:0.05,metalness:0.0});
+const darkM=P({color:C.dark,roughness:0.5,clearcoat:0.2});
+const robi=new THREE.Group(); scene.add(robi);
+const parts={};
+function add(name,mesh,parent=robi){ mesh.castShadow=true; mesh.receiveShadow=true; parent.add(mesh); parts[name]=mesh; return mesh; }
+// head
+const head=new THREE.Group(); head.position.set(0,1.32,0); robi.add(head); parts.head=head;
+add('skull',new THREE.Mesh(new RoundedBoxGeometry(1.56,1.18,1.12,10,0.34),shell),head);
+add('bezel',new THREE.Mesh(new RoundedBoxGeometry(1.28,0.9,0.1,8,0.22),white),head).position.set(0,-0.01,0.545);
+add('screen',new THREE.Mesh(new RoundedBoxGeometry(1.16,0.79,0.1,8,0.19),screenM),head).position.set(0,-0.01,0.565);
+for (const sx of [-1,1]){
+  const pod=add('pod'+sx,new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.16,48),white),head); pod.rotation.z=Math.PI/2; pod.position.set(sx*0.82,-0.02,0);
+  const cap=add('cap'+sx,new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.06,48),P({color:C.accent})),head); cap.rotation.z=Math.PI/2; cap.position.set(sx*0.915,-0.02,0);
+}
+add('stalk',new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,0.34,24),darkM),head).position.set(0,0.75,0);
+add('ball',new THREE.Mesh(new THREE.SphereGeometry(0.105,40,24),P({color:'#ffffff',emissive:new THREE.Color('#ffe9a8'),emissiveIntensity:0.35})),head).position.set(0,0.95,0);
+// neck + body
+add('neck',new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,0.18,32),darkM)).position.set(0,0.66,0);
+const bodyG=new THREE.SphereGeometry(0.62,64,40); bodyG.scale(1,0.86,0.84);
+add('body',new THREE.Mesh(bodyG,shell)).position.set(0,0.2,0);
+add('belly',new THREE.Mesh(new RoundedBoxGeometry(0.5,0.3,0.07,6,0.12),screenM)).position.set(0,0.27,0.5);
+const ledC=['#FF5A4E','#FFC83A','#3DE0C3'];
+ledC.forEach((c,i)=>{ add('led'+i,new THREE.Mesh(new THREE.SphereGeometry(0.045,32,16),P({color:c,emissive:new THREE.Color(c),emissiveIntensity:0.9,roughness:0.2}))).position.set((i-1)*0.13,0.27,0.54); });
+// arms (separate groups with shoulder pivots)
+const arms={};
+for (const sx of [-1,1]){
+  const a=new THREE.Group(); a.position.set(sx*0.6,0.38,0.0); robi.add(a); arms[sx]=a;
+  const up=add('arm'+sx,new THREE.Mesh(new THREE.CapsuleGeometry(0.1,0.34,8,24),shell),a); up.position.set(0,-0.24,0);
+  const hand=add('hand'+sx,new THREE.Mesh(new THREE.SphereGeometry(0.155,40,24),white),a); hand.position.set(0,-0.5,0);
+  a.rotation.z=sx*0.32;
+}
+window.parts=parts; window.arms=arms;
+const proj=(v)=>{ const p=v.clone().project(cam); return [ (p.x*0.5+0.5)*S, (1-(p.y*0.5+0.5))*S ]; };
+window.renderRobi=(o)=>{
+  robi.rotation.set(0,o.yaw||0,o.roll||0); head.rotation.set(o.headPitch||0,o.headYaw||0,o.headRoll||0);
+  for (const sx of [-1,1]){ arms[sx].rotation.set(0,0,(o['arm'+(sx<0?'L':'R')]??sx*0.32)); arms[sx].visible=!(o.hideArms||[]).includes(sx); }
+  const showOnly=o.only; // 'body' | 'armL' | 'armR'
+  robi.traverse(m=>{ if(m.isMesh){ m.visible=true; } });
+  if (showOnly==='body'){ for (const sx of [-1,1]) arms[sx].visible=false; }
+  if (showOnly==='armL'||showOnly==='armR'){ robi.traverse(m=>{ if(m.isMesh) m.visible=false; }); const a=arms[showOnly==='armL'?-1:1]; a.visible=true; a.traverse(m=>{ if(m.isMesh) m.visible=true; }); }
+  const target=new THREE.Vector3(0,o.ty??0.9,0); const dist=o.dist??9.2; const az=o.az??0, el=o.el??0.06;
+  cam.position.set(target.x+dist*Math.cos(el)*Math.sin(az), target.y+dist*Math.sin(el), target.z+dist*Math.cos(el)*Math.cos(az)); cam.lookAt(target); cam.updateMatrixWorld();
+  key.position.set(-3.5,6,6); key.target.position.copy(target); rim.position.set(4,3,-4); rim.target.position.copy(target);
+  robi.updateMatrixWorld(true);
+  renderer.setClearColor(0,0); renderer.render(scene,cam);
+  // projected anchors
+  const scr=parts.screen; const sw=0.58, sh=0.395; const corners=[[-sw,sh],[sw,sh],[sw,-sh],[-sw,-sh]].map(([x,y])=>proj(new THREE.Vector3(x,y,0.06).applyMatrix4(scr.matrixWorld)));
+  const anchors={screen:corners, shoulderL:proj(new THREE.Vector3().setFromMatrixPosition(arms[-1].matrixWorld)), shoulderR:proj(new THREE.Vector3().setFromMatrixPosition(arms[1].matrixWorld)), ball:proj(new THREE.Vector3().setFromMatrixPosition(parts.ball.matrixWorld)), headTop:proj(new THREE.Vector3(0,0.6,0).applyMatrix4(head.matrixWorld)), feet:proj(new THREE.Vector3(0,-0.32,0))};
+  return {png:renderer.domElement.toDataURL('image/png'), anchors};
+};
+window.ready=true;
+</script></body></html>

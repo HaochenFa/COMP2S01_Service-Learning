@@ -1,0 +1,171 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/","three-mesh-bvh":"/node_modules/three-mesh-bvh/build/index.module.js","three-subdivide":"/node_modules/three-subdivide/build/index.module.js"}}</script>
+<style>html,body{margin:0;background:transparent}</style></head><body>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { MeshBVH } from 'three-mesh-bvh';
+import { LoopSubdivision } from 'three-subdivide';
+
+const S=+(new URLSearchParams(location.search).get('s')||1000);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setSize(S,S); renderer.setPixelRatio(1);
+renderer.toneMapping=THREE.NeutralToneMapping; renderer.toneMappingExposure=1.0;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+scene.environmentIntensity=0.35;
+const cam=new THREE.PerspectiveCamera(20,1,0.01,10);
+const key=new THREE.DirectionalLight(0xfff0e2,2.7); scene.add(key);
+const rim=new THREE.DirectionalLight(0xe4ecff,1.9); scene.add(rim);
+const fill=new THREE.HemisphereLight(0xfffaf5,0x8f8078,0.55); scene.add(fill);
+const lightRig=(camPos,target)=>{ // lights relative to camera so look is consistent
+  const f=target.clone().sub(camPos).normalize(); const up=new THREE.Vector3(0,1,0); const r=f.clone().cross(up).normalize(); const u=r.clone().cross(f).normalize();
+  key.position.copy(target).addScaledVector(r,-1.0).addScaledVector(u,1.4).addScaledVector(f,-1.6); key.target.position.copy(target);
+  rim.position.copy(target).addScaledVector(r,1.6).addScaledVector(u,0.6).addScaledVector(f,1.4); rim.target.position.copy(target);
+  scene.add(key.target); scene.add(rim.target);
+};
+
+const g=await new GLTFLoader().loadAsync('/node_modules/@webxr-input-profiles/assets/dist/profiles/generic-hand/right.glb');
+let mesh; g.scene.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; });
+scene.add(g.scene); g.scene.visible=false; g.scene.updateMatrixWorld(true);
+const bones={}; mesh.skeleton.bones.forEach(b=>bones[b.name]=b);
+const rest={}; for (const [n,b] of Object.entries(bones)) rest[n]={p:b.position.clone(),q:b.quaternion.clone(),s:b.scale.clone()};
+const F=['index-finger','middle-finger','ring-finger','pinky-finger'];
+const chainOf=(f)=>f==='thumb'?['thumb-metacarpal','thumb-phalanx-proximal','thumb-phalanx-distal','thumb-tip']:[f+'-metacarpal',f+'-phalanx-proximal',f+'-phalanx-intermediate',f+'-phalanx-distal',f+'-tip'];
+// hand basis at rest
+const P=(n)=>rest[n].p.clone();
+const across=P('pinky-finger-phalanx-proximal').sub(P('index-finger-phalanx-proximal')).normalize();
+const dmid=P('middle-finger-tip').sub(P('middle-finger-phalanx-proximal')).normalize();
+let nrm=across.clone().cross(dmid).normalize();
+const palmC=P('middle-finger-phalanx-proximal').add(P('wrist')).multiplyScalar(0.5);
+if (nrm.dot(P('thumb-tip').sub(palmC))<0) nrm.negate();
+const flexAxis=(f)=>{ const ch=chainOf(f); const d=P(ch[ch.length-1]).sub(P(ch[1])).normalize(); return d.clone().cross(nrm).normalize(); };
+const Cstore={};
+function applyPose(spec){
+  for (const f of ['thumb',...F]){
+    const ch=chainOf(f); let C=new THREE.Quaternion(); let prevN=null, prevR=null;
+    for (let k=0;k<ch.length;k++){
+      const n=ch[k], r=rest[n]; let N;
+      if(k===0) N=r.p.clone(); else N=prevN.clone().add(r.p.clone().sub(prevR).applyQuaternion(C));
+      const js=(spec[f]||[])[k];
+      if(js) for(const [ax,deg] of js){ const a=ax.clone().applyQuaternion(C).normalize(); C=new THREE.Quaternion().setFromAxisAngle(a,deg*Math.PI/180).multiply(C); }
+      bones[n].position.copy(N); bones[n].quaternion.copy(C.clone().multiply(r.q)); bones[n].scale.copy(r.s);
+      Cstore[n]=C.clone(); prevN=N; prevR=r.p;
+    }
+  }
+}
+function thickenThumb(sc){
+  for (const n of ['thumb-metacarpal','thumb-phalanx-proximal','thumb-phalanx-distal']){
+    const b=bones[n]; const ch=chainOf('thumb'); const i=ch.indexOf(n); const dir=bones[ch[i+1]].position.clone().sub(b.position).normalize();
+    // find local axis aligned with dir
+    const ax=[new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1)].map(v=>Math.abs(v.clone().applyQuaternion(b.quaternion).dot(dir)));
+    const k=ax.indexOf(Math.max(...ax)); const s=[sc,sc,sc]; s[k]=1; b.scale.set(...s);
+  }
+}
+const bvhCache={};
+function bake(o){
+  g.scene.updateMatrixWorld(true); mesh.skeleton.update();
+  const src=mesh.geometry; const pos=src.attributes.position; const cnt=pos.count;
+  const arr=new Float32Array(cnt*3); const v=new THREE.Vector3();
+  for(let i=0;i<cnt;i++){ v.fromBufferAttribute(pos,i); mesh.applyBoneTransform(i,v); v.applyMatrix4(mesh.matrixWorld); arr.set([v.x,v.y,v.z],i*3); }
+  let geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(arr,3)); geo.setIndex(src.index.clone());
+  geo=mergeVertices(geo,1e-5);
+  if (o.side==='left'){ geo.scale(-1,1,1); const idx=geo.index.array; for(let i=0;i<idx.length;i+=3){ const t=idx[i+1]; idx[i+1]=idx[i+2]; idx[i+2]=t; } }
+  geo.computeVertexNormals();
+  if ((o.subdiv??1)>0){ geo.deleteAttribute('normal'); geo=LoopSubdivision.modify(geo,o.subdiv??1,{split:false,uvSmooth:false,preserveEdges:false,flatOnly:false}); }
+  for (const k of Object.keys(geo.attributes)) if (k!=='position') geo.deleteAttribute(k);
+  geo=mergeVertices(geo,1e-6);
+  geo.computeVertexNormals();
+  return geo;
+}
+const mir=(o,v)=> o.side==='left'? new THREE.Vector3(-v.x,v.y,v.z) : v.clone();
+function colorize(geo,o){
+  const pos=geo.attributes.position, nor=geo.attributes.normal, cnt=pos.count;
+  const bvh=new MeshBVH(geo); const ray=new THREE.Ray(); const p=new THREE.Vector3(), n=new THREE.Vector3();
+  const N=o.aoSamples??28, maxD=0.045;
+  const base=new THREE.Color(o.skin||'#c98d63'); // sRGB hex -> linear internally
+  const red=new THREE.Color(o.blush||'#d2675a');
+  const nail=new THREE.Color(o.nail||'#f2cdbf');
+  const cols=new Float32Array(cnt*3);
+  // nail/knuckle helpers in baked space
+  const tipInfo=[];
+  for (const f of ['thumb',...F]){
+    const ch=chainOf(f); const tip=mir(o,bones[ch[ch.length-1]].position), dis=mir(o,bones[ch[ch.length-2]].position);
+    const C=Cstore[ch[ch.length-2]]; let pal=nrm.clone().applyQuaternion(C); if(o.side==='left') pal.x=-pal.x;
+    const seg=tip.clone().sub(dis); const len=seg.length();
+    const center=dis.clone().addScaledVector(seg,0.62).addScaledVector(pal,-0.0058);
+    tipInfo.push({center,pal,r:(f==='thumb'?0.0082:(f==='pinky-finger'?0.0058:0.0066)),len});
+  }
+  const knuck=[]; for (const f of F){ for (const j of ['-phalanx-proximal','-phalanx-intermediate']){ const n2=f+j; let pal=nrm.clone().applyQuaternion(Cstore[n2]); if(o.side==='left') pal.x=-pal.x; knuck.push({p:mir(o,bones[n2].position),pal}); } }
+  const dirs=[]; for(let s=0;s<N;s++){ const u=(s+0.5)/N, phi=s*2.399963; const r=Math.sqrt(u); dirs.push([r*Math.cos(phi),r*Math.sin(phi),Math.sqrt(1-u)]); }
+  const t1=new THREE.Vector3(), t2=new THREE.Vector3(), d=new THREE.Vector3();
+  for(let i=0;i<cnt;i++){
+    p.fromBufferAttribute(pos,i); n.fromBufferAttribute(nor,i).normalize();
+    t1.set(Math.abs(n.x)<0.9?1:0, Math.abs(n.x)<0.9?0:1, 0).cross(n).normalize(); t2.copy(n).cross(t1);
+    let occ=0; for(const [a,b,c] of dirs){ d.copy(t1).multiplyScalar(a).addScaledVector(t2,b).addScaledVector(n,c).normalize(); ray.origin.copy(p).addScaledVector(n,0.0008); ray.direction.copy(d); const hit=bvh.raycastFirst(ray,THREE.DoubleSide,0,maxD); if(hit) occ+=1-hit.distance/maxD; }
+    let ao=1-(occ/N)*(o.aoStrength??1.25); ao=Math.max(0.25,Math.min(1,ao)); ao=Math.pow(ao,1.15);
+    const col=base.clone();
+    // blush near knuckles (dorsal) and fingertips
+    let kb=0; for(const k of knuck){ const dd=p.distanceTo(k.p); const w=Math.max(0,1-dd/0.012)*Math.max(0,-n.dot(k.pal)); kb=Math.max(kb,w); }
+    let nb=0, tb=0; for(const t of tipInfo){ const dd=p.distanceTo(t.center); const w=Math.max(0,1-dd/t.r); const facing=Math.max(0,-n.dot(t.pal)); nb=Math.max(nb, Math.pow(w,0.6)*Math.pow(facing,0.7)); tb=Math.max(tb, Math.max(0,1-dd/(t.r*2.2))); }
+    col.lerp(red,0.10*kb+0.07*tb);
+    col.lerp(nail,0.62*Math.min(1,nb*1.6));
+    cols.set([col.r*ao,col.g*ao,col.b*ao],i*3);
+  }
+  geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
+}
+const group=new THREE.Group(); scene.add(group);
+function sleeveFor(geo,o){
+  const pos=geo.attributes.position; let sx=0,sz=0,c=0, minx=1,maxx=-1,minz=1,maxz=-1;
+  for(let i=0;i<pos.count;i++){ const y=pos.getY(i); if(y>0.060){ const x=pos.getX(i), z=pos.getZ(i); sx+=x; sz+=z; c++; minx=Math.min(minx,x); maxx=Math.max(maxx,x); minz=Math.min(minz,z); maxz=Math.max(maxz,z);} }
+  const cx=sx/c, cz=sz/c, rx=(maxx-minx)/2, rz=(maxz-minz)/2;
+  const grp=new THREE.Group();
+  const len=o.sleeveLen??0.42; const y0=o.sleeveStart??0.058;
+  const mat=new THREE.MeshPhysicalMaterial({color:new THREE.Color(o.sleeve||'#3a6df0'),roughness:0.88,sheen:1.0,sheenRoughness:0.6,sheenColor:new THREE.Color('#ffffff').lerp(new THREE.Color(o.sleeve||'#3a6df0'),0.4)});
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(1,1.04,len,48,1,false),mat);
+  body.scale.set(rx*1.32,1,rz*1.25); body.position.set(cx,y0+len/2+0.006,cz); grp.add(body);
+  const cuff=new THREE.Mesh(new THREE.TorusGeometry(1,0.1,16,64),mat); cuff.rotation.x=Math.PI/2; cuff.scale.set(rx*1.30,rz*1.23,1.0*Math.min(rx,rz)*1.0); cuff.position.set(cx,y0+0.006,cz); grp.add(cuff);
+  const inner=new THREE.Mesh(new THREE.CircleGeometry(1,48),new THREE.MeshStandardMaterial({color:new THREE.Color(o.sleeve||'#3a6df0').multiplyScalar(0.35),roughness:1}));
+  inner.rotation.x=Math.PI/2; inner.scale.set(rx*1.25,rz*1.18,1); inner.position.set(cx,y0+0.0062,cz); grp.add(inner);
+  return grp;
+}
+window.renderHand=(o)=>{
+  // pose
+  const spec={}; const cu=o.curl??1;
+  const spread={ 'index-finger':o.adIndex??-4, 'middle-finger':0, 'ring-finger':o.adRing??3, 'pinky-finger':o.adPinky??7 };
+  for (const f of F){ const a=flexAxis(f); const mc= f==='ring-finger'?5: f==='pinky-finger'?10:0;
+    spec[f]=[[[a,mc*cu]],[[a,(o.mcp??96)*cu],[nrm,spread[f]]],[[a,(o.pip??108)*cu]],[[a,(o.dip??72)*cu]],null]; }
+  const radial=across.clone().negate();
+  const tAx=(name)=> name==='n'?nrm: name==='-n'?nrm.clone().negate(): name==='d'?dmid: name==='k'?across: name==='-k'?radial: new THREE.Vector3(...name);
+  spec.thumb=(o.thumb||[[['-n',40]],null,null,null]).map(js=>js?js.map(([ax,deg])=>[tAx(ax),deg]):null);
+  applyPose(spec); if(o.thumbThick) thickenThumb(o.thumbThick);
+  let geo=bake(o); colorize(geo,o);
+  group.clear();
+  const skin=new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:o.rough??0.58,sheen:0.35,sheenRoughness:0.75,sheenColor:new THREE.Color('#ffc9b5'),clearcoat:0.08,clearcoatRoughness:0.55});
+  const hand=new THREE.Mesh(geo,skin); group.add(hand);
+  if (o.sleeve!==null) group.add(sleeveFor(geo,o));
+  // orientation
+  group.quaternion.identity(); group.updateMatrixWorld(true);
+  let q=new THREE.Quaternion();
+  const tip=mir(o,bones['thumb-tip'].position), tb=mir(o,bones['thumb-phalanx-proximal'].position);
+  if (o.align){ q.setFromUnitVectors(tip.clone().sub(tb).normalize(), new THREE.Vector3(0,o.align==='up'?1:-1,0)); }
+  const Y=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),o.yaw||0);
+  const X=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),o.pitch||0);
+  const Z=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),o.roll||0);
+  q=Z.multiply(X).multiply(Y).multiply(q); group.quaternion.copy(q); group.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(hand); const c=box.getCenter(new THREE.Vector3()); const sz=box.getSize(new THREE.Vector3()).length();
+  const dist=(o.distK??3.4)*sz; const az=o.az??0, el=o.el??0.12;
+  cam.position.set(c.x+dist*Math.cos(el)*Math.sin(az), c.y+dist*Math.sin(el), c.z+dist*Math.cos(el)*Math.cos(az)); cam.lookAt(c);
+  cam.updateMatrixWorld(); lightRig(cam.position,c);
+  renderer.setClearColor(0x000000,0); renderer.render(scene,cam);
+  const pa=geo.attributes.position; const v=new THREE.Vector3(); let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(let i=0;i<pa.count;i+=3){ v.fromBufferAttribute(pa,i).applyMatrix4(hand.matrixWorld).project(cam); const px=(v.x*0.5+0.5)*S, py=(1-(v.y*0.5+0.5))*S; x0=Math.min(x0,px); x1=Math.max(x1,px); y0=Math.min(y0,py); y1=Math.max(y1,py); }
+  return {png:renderer.domElement.toDataURL('image/png'), handBox:[x0,y0,x1,y1]};
+};
+window.ready=true;
+</script></body></html>
