@@ -10,7 +10,7 @@ The team is Billy (Computing, the owner of this repo), Yelina (Supply Chain Mana
 
 ## Where things are
 
-The deliverables live in Google Drive, not in this repo. The folder is "Group 12 - Final Workshop Proposal and Teaching Materials". Find files by title with Drive search. Do not write their IDs or links into this repo: the proposal holds teammates' phone numbers.
+The shared proposal and team deliverables live in Google Drive, in "Group 12 - Final Workshop Proposal and Teaching Materials". Find files by title with Drive search. Local teaching sources, artwork and exported deliverables are also versioned here; see `README.md` for the folder guide. Billy's Day 2 editable deck is in the saved presentation in the chat, and the flashcard template is in Canva. Do not write private document IDs or links into this repo: the proposal holds teammates' phone numbers.
 
 - Google Doc "COMP2S01 Workshop Proposal" is the proposal and the source of truth for the timetable, who leads what, and deadlines (Part 3). Teammates edit it too, so read it fresh before every change.
 - Google Doc "Feedback on Workshop Proposal & Day 1" is the teachers' feedback on the submitted proposal and the Day 1 materials (November 2026).

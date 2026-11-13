@@ -1,0 +1,8 @@
+# Teaching documents and artwork are binary assets, not line-oriented text.
+*.pdf binary
+*.pptx binary
+*.docx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
