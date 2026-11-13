@@ -1,3 +1,4 @@
+node_modules
 node_modules/
 .DS_Store
 .playwright-mcp/
@@ -7,9 +8,10 @@ hw1-momo/meet-momo-video/dist/
 
 # Workshop previews and reproducible packaging
 __pycache__/
-workshop/day1-deck/*_overview-*.png
-workshop/day1-deck/build/cache/
-workshop/flashcard-template/build/*.png
-workshop/flashcard-template/build/*.pdf
-workshop/flashcard-template/output/*.zip
-workshop/flashcard-template/output/template-manifest.json
+workshop/day1/slides/*_overview-*.png
+workshop/day1/slides/build/cache/
+workshop/day2/slides/build/export-cache/
+workshop/day2/flashcards/build/*.png
+workshop/day2/flashcards/build/*.pdf
+workshop/day2/flashcards/output/*.zip
+workshop/day2/flashcards/output/template-manifest.json

@@ -2,7 +2,7 @@
 
 `Taming_AI_Day1_Combined.pptx` is the combined teaching deck.
 
-`build/` contains its source, the original Billy deck in `base/`, extracted teaching assets in `assets/`, and prepared Robi cutouts in `figures/`. Keep those inputs: the Day 2 slides also reference the Robi cutouts. Shared original artwork lives in `../assets/`.
+`build/` contains its source, the original Billy deck in `base/`, extracted teaching assets in `assets/`, and prepared Robi cutouts in `figures/`. Keep those inputs: the Day 2 slides also reference the Robi cutouts. Shared original artwork lives in `../../assets/`.
 
 Build from this folder with Python, `python-pptx`, Pillow, NumPy and lxml:
 

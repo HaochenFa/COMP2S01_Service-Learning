@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('../', import.meta.url)).replace(/\/$/, '');
 const A = `${ROOT}/assets`;
-const R = fileURLToPath(new URL('../../day1-deck/build/figures/', import.meta.url));
+const R = fileURLToPath(new URL('../../../day1/slides/build/figures/', import.meta.url));
 const C = {cream:'#FEF6E9',navy:'#17213D',muted:'#4B5470',teal:'#0F766E',green:'#178A50',purple:'#7B4DFF',orange:'#C9530A',yellow:'#FFC83A',blue:'#2F6BFF',coral:'#D93A25',white:'#FFFFFF',paleGreen:'#DFF3E6',palePurple:'#ECE5FF'};
 function text(s,name,content,x,y,w,h,size=30,color=C.navy,font='Lexend',bold=false,align='left') {
   return s.shapes.add({name,geometry:'textbox',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:'none',width:0},text:{text:content,style:{typeface:font,fontSize:size,bold,color,alignment:align,verticalAlignment:'top',insets:0,autoFit:'none',wrap:'square'}}});

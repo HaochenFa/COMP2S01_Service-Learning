@@ -8,7 +8,7 @@ A monorepo holding all of the owner's COMP2S01 coursework. Each assignment lives
 
 - `hw1-momo/`: Homework 1, the *Momo Learns to Munch* game and its Remotion intro video. Read `hw1-momo/CLAUDE.md` before changing anything there; its commands are run from `hw1-momo/`.
 - `hw1-math-meteor-defense/`: Homework 1, the *Math Meteor Defense* game shown in the HW1 presentation, a single-file HTML maths game with its MVP kept beside it. Read `hw1-math-meteor-defense/CLAUDE.md` before changing anything there; its commands are run from `hw1-math-meteor-defense/`. It was first filed as in-class work, so commits before the rename (and the `hw1-meteor-*` tags) have it under `inclass1-math-meteor-defense/`.
-- `workshop/`: the team's service-learning workshop *Taming AI* (proposal and teaching materials for Primary 5–6 learners in the Philippines). Read `workshop/CLAUDE.md` before changing anything there. Its deliverables live in Google Drive (the proposal is a Google Doc) and are checked against the course documents in `workshop/docs/guidelines/`. The only code is `workshop/teach-robi-video-source/`, the Remotion source of the Day 1 intro video.
+- `workshop/`: the team's service-learning workshop *Taming AI* (proposal and teaching materials for Primary 5–6 learners in the Philippines). Read `workshop/CLAUDE.md` before changing anything there. Its deliverables live in Google Drive (the proposal is a Google Doc) and are checked against the course documents in `workshop/docs/guidelines/`. Teaching sources are grouped by day under `workshop/day1/` and `workshop/day2/`; the Remotion intro video is in `workshop/day1/robi-video/`.
 
 ## Conventions
 

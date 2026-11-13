@@ -22,7 +22,7 @@ In this repo:
   - `COMP2S01_261_Taming AI_Project Expectations_Philippines.pdf`: the brief, with learning objectives, theme, tools and the four required outputs and their specs.
   - `COMP2S01_261_Workshop Proposal_TEMPLATE.docx`: the proposal format and workshop objectives A–F.
   - `COMP2S01_Assessment_Rubrics.pdf` and `COMP2S01_Assessment_Components.pdf`: grading. Proposal 10%, teaching materials 15%, individual service performance 40%, reflective journal 30%, class performance 5%.
-- `teach-robi-video-source/` is the Remotion project for the 75-second intro video "How does a computer learn?" (Teach Robi), played at the start of Billy's Machine Learning block on Day 1. Read its `README.md` first; its commands are run from that folder. Its own `.gitignore` keeps the rendered video and generated audio out of git.
+- `day1/robi-video/` is the Remotion project for the 75-second intro video "How does a computer learn?" (Teach Robi), played at the start of Billy's Machine Learning block on Day 1. Read its `README.md` first; its commands are run from that folder. Its own `.gitignore` keeps the rendered video and generated audio out of git.
 
 The earlier local copies (the proposal `.docx`, the proposal and Day 1 decks, the team brief PDF and `proposal-review.md`) were removed because they no longer matched the Google Doc. They are recoverable from commit `e7f907d`.
 
