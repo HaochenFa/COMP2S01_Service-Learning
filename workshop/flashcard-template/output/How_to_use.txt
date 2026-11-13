@@ -1,0 +1,12 @@
+TAMING AI FLASHCARD TEMPLATE
+
+10 blank cards: 3 About AI, 3 AI Can Help, 4 Wise AI Choices.
+Two extra pages are examples and do not count toward the learner deck.
+
+In Canva, make one copy per group. Replace Short title and One short sentence. Remove the Filipino placeholder hints and the Your picture/Iyong larawan text when adding the final content. Keep the category labels. Add a learner drawing, a free Canva picture or one of the group's two AI pictures inside the four corner marks.
+
+Keep one idea per card and use large, simple wording. A facilitator should check every claim with the group.
+
+Printing: the A4 file has four cards per sheet, each 90 x 135 mm. Print at 100% / Actual size and trim using the marks. Pages 11 and 12 in the single-card PDF are examples.
+
+The three backgrounds were made with the built-in image generation tool. The prompt set is included in assets/generation-prompts.json. Text in the Canva design remains editable; the decorative frame and Robi are background images.

@@ -6,7 +6,7 @@ All coursework for COMP2S01, one folder per piece of work.
 |---|---|
 | [`hw1-momo/`](hw1-momo/) | Assignment 1: *Momo Learns to Munch*, an educational AI game for Grade 5/6 pupils, plus its intro video. |
 | [`hw1-math-meteor-defense/`](hw1-math-meteor-defense/) | Assignment 1: *Math Meteor Defense*, a single-file HTML maths game for Grade 5/6 pupils, shown in the HW1 presentation, with its first version (MVP) kept beside it. |
-| [`workshop/`](workshop/) | Service-learning workshop *Taming AI* for Primary 5–6 learners in the Philippines: the course guidelines and the source of the Day 1 intro video. The proposal and the teaching materials are kept in Google Drive. |
+| [`workshop/`](workshop/) | Service-learning workshop *Taming AI*: Day 1 deck and video source, Billy’s Day 2 slide source, flashcard templates, shared artwork and course guidelines. The shared proposal remains in Google Drive. |
 
 ## Versions
 

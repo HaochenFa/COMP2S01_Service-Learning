@@ -1,0 +1,53 @@
+{
+  "mode": "built-in image_gen",
+  "images": [
+    {
+      "key": "robi_explains",
+      "args": {
+        "referenced_image_paths": [
+          "workshop/assets/Robi’s Cheerful Waving Sticker.png"
+        ],
+        "transparent_background": true,
+        "prompt": "Use case: illustration-story. Asset type: polished classroom slide illustration, transparent cutout, 4:3 landscape composition. Use the attached robot as a CHARACTER REFERENCE and preserve its exact identity: glossy warm yellow rounded body, cream face rim, dark navy face screen, luminous cyan friendly eyes, little yellow bulb antenna, three colored chest lights. Create a new scene: Robi sits beside a Filipino child aged around seven with short black hair and a coral T-shirt; they share an open picture book showing a simple little volcano, and the child points with curiosity while Robi thinks with one hand near its chin. Kind, expressive, conversational, no scary elements. Both complete figures and the entire open book visible, balanced as one cohesive illustration, minimal floor shadow. Premium softly lit 3D clay-toy children's educational illustration, rounded tactile materials and lovely dimensional lighting, consistent with the reference. Transparent background, generous breathing room around all subjects. NO letters, text, speech bubbles, labels, numbers, watermark, logos, extra arms or extra fingers."
+      }
+    },
+    {
+      "key": "flashcard_team",
+      "args": {
+        "referenced_image_paths": [
+          "workshop/assets/Robi’s Cheerful Waving Sticker.png"
+        ],
+        "transparent_background": true,
+        "prompt": "Use case: illustration-story. Asset type: classroom teaching slide hero illustration, transparent cutout, landscape 4:3. Use attached Robi only as CHARACTER REFERENCE; preserve glossy yellow robot, cream face rim, navy face, cyan eyes, bulb antenna, three colored chest lights. New scene: three Filipino primary-school children age 10–12 in casual coral, teal and blue clothes collaborate around a small rounded wooden art table with a few large flashcards, crayons and colored pencils. One child holds a card with a simple big padlock picture, another draws a tree, another reads a card with blank lines; Robi stands proudly beside them. Two girls and one boy, varied warm brown skin tones and dark hair. Show their hands and work naturally, no extra fingers, no additional characters. Joyful concentration, premium high-quality softly lit 3D clay-toy illustration with smooth tactile materials; not flat clip art. All figures visible with generous outer margin; cohesive scene without frames. Flashcards contain pictures only, no text. Transparent background and small natural contact shadow only. NO writing, logos, watermark."
+      }
+    },
+    {
+      "key": "privacy_card",
+      "args": {
+        "transparent_background": true,
+        "prompt": "Use case: scientific-educational. Asset type: a single clear illustration for a primary-school AI privacy flashcard, isolated transparent background, square composition. A friendly Filipino child aged about eight with warm brown skin, dark hair and a teal shirt gently holds a closed coral keepsake box with a large gold closed padlock on its front. Their expression is calm and confident; the meaning is keeping personal information private. Center the child and box as one clean cohesive bust portrait, showing both hands naturally on either side of the box. High-quality cheerful 3D clay-toy children's educational illustration, rounded forms, warm studio light, premium polished rendering, navy and warm yellow accents, not flat clip art. Only the child, closed box and padlock; no surrounding decorations, symbols, readable documents, text, letters, numbers, bubbles, background scenery, watermark or logos. Anatomy correct, no extra hands, fingers or limbs. Whole silhouette fully within frame."
+      }
+    },
+    {
+      "key": "volcano",
+      "args": {
+        "transparent_background": true,
+        "prompt": "Use case: scientific-educational. Asset type: clear classroom teaching illustration for children, isolated transparent background, landscape 4:3. A beautifully rendered miniature volcanic mountain on a small green island-like oval base, tropical green foothills, an obvious open summit crater with a small calm plume of pale grey volcanic gas and ash rising from it, and a modest orange lava flow just below the crater. No cutaway, labels, arrows, human faces or people. Show a simplified volcano as an opening that can release hot melted rock, ash and gas; no fireworks, mushroom cloud, fireballs, buildings or disaster. Friendly premium 3D clay-toy educational model, matte warm brown rock, tactile grass, soft warm studio light, crisp details with a very simple silhouette. Whole mountain and plume contained within frame, plenty of transparent margin. No text, letters, symbols, watermark or logos. Generic volcano, not a particular real Philippine volcano."
+      }
+    },
+    {
+      "key": "laptop_group",
+      "args": {
+        "transparent_background": true,
+        "prompt": "Use case: illustration-story. Asset type: classroom activity illustration, isolated transparent background, landscape 4:3. Three Filipino primary school children age 10–12 and one young adult facilitator around a simple wooden table, collaborating on a prompt. A girl with warm brown skin and a teal shirt points at her paper, a boy in coral holds a pencil, another girl in soft yellow looks at the laptop. The adult in blue is the ONLY person typing on a laptop. All look thoughtful and engaged, working as a friendly team. Screen faces the group so no readable interface is shown. Premium high quality 3D clay-toy children's educational illustration, natural child proportions, dark hair, expressive faces, softly lit warm scene, polished rounded materials. Entire group and table fully within frame; transparent background with small contact shadow. No robot, speech bubbles, readable writing, logos, watermark, extra fingers or limbs. Few props, clear focal point on the shared prompt paper."
+      }
+    },
+    {
+      "key": "football_card",
+      "args": {
+        "transparent_background": true,
+        "prompt": "Use case: illustration-story. Asset type: simple picture-choice exercise for a children's flashcard, square transparent cutout. A cheerful Filipino child age about eight, warm brown skin, short dark hair, yellow shirt and teal shorts, playing with a black-and-white football at their feet. Whole body and ball entirely within frame, simple friendly stance, one foot beside the ball, arms naturally balanced. Premium warm softly lit 3D clay-toy educational illustration, rounded tactile materials, navy shoes, restrained palette matching cream, teal, coral and yellow teaching slides. Transparent background, minimal contact shadow. ONLY child and ball, no goals, stadium, scenery, boxes, padlocks, robot, text, letters, numbers, watermark or logos. Correct anatomy."
+      }
+    }
+  ]
+}

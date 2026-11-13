@@ -4,3 +4,12 @@ node_modules/
 hw1-momo/meet-momo-video/out/
 hw1-momo/meet-momo-video/dist/
 .claude/settings.local.json
+
+# Workshop previews and reproducible packaging
+__pycache__/
+workshop/day1-deck/*_overview-*.png
+workshop/day1-deck/build/cache/
+workshop/flashcard-template/build/*.png
+workshop/flashcard-template/build/*.pdf
+workshop/flashcard-template/output/*.zip
+workshop/flashcard-template/output/template-manifest.json
