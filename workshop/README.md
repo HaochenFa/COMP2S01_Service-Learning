@@ -15,4 +15,4 @@ The shared Google Doc **COMP2S01 Workshop Proposal** remains the timetable and r
 
 Day 2 slides are maintained in the saved presentation in this chat. The editable flashcard template is in Canva under **Taming AI — Flashcard Templates (10 cards + 2 examples)**. Local PDFs are snapshots, not live copies of later Canva edits.
 
-Keep generated illustrations and final teaching files. Temporary page renders, diagnostic PDFs, caches and duplicate ZIP bundles remain local and are excluded from Git. See `CLAUDE.md` for workshop constraints.
+Keep generated illustrations and final teaching files. Temporary page renders, diagnostic PDFs, caches and duplicate ZIP bundles remain local and are excluded from Git. See [`AGENTS.md`](AGENTS.md) for workshop constraints.
